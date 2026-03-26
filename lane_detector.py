@@ -152,13 +152,17 @@ class LaneDetector:
         
         return cv2.bitwise_and(canny_image, mask)
 
-    def _display_lines(self, image: np.ndarray, left_line: Optional[np.ndarray], right_line: Optional[np.ndarray]) -> np.ndarray:
+    def _display_lines(self, image: np.ndarray, left_line: Optional[np.ndarray], right_line: Optional[np.ndarray], is_warning: bool = False) -> np.ndarray:
         """Draws the extrapolated lines onto a blank image matching the input dimensions."""
         line_image = np.zeros_like(image)
         lines = [l for l in (left_line, right_line) if l is not None]
+        
+        # Override to strict Red (0, 0, 255 in BGR) if warning is active, else use standard config color
+        render_color = (0, 0, 255) if is_warning else self.config.line_color
+        
         for line in lines:
             x1, y1, x2, y2 = line
-            cv2.line(line_image, (x1, y1), (x2, y2), self.config.line_color, self.config.line_thickness)
+            cv2.line(line_image, (x1, y1), (x2, y2), render_color, self.config.line_thickness)
         return line_image
 
     def process_frame(self, frame: np.ndarray) -> np.ndarray:
@@ -190,8 +194,11 @@ class LaneDetector:
             left_line, right_line = self._average_slope_intercept(lane_image, lines)
             offset_meters = self._calculate_offset(width, left_line, right_line)
             
-            # Outputs
-            line_overlay = self._display_lines(lane_image, left_line, right_line)
+            # Determine if vehicle has drifted dangerously out of lane (> 0.5m offset)
+            is_drifting = offset_meters is not None and abs(offset_meters) > 0.5
+            
+            # Outputs with Dynamic Red-line warning triggering
+            line_overlay = self._display_lines(lane_image, left_line, right_line, is_warning=is_drifting)
             blended_lanes = cv2.addWeighted(
                 lane_image, 
                 self.config.overlay_alpha, 
