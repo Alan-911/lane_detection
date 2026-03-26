@@ -16,10 +16,10 @@ This codebase deviates from standard procedural scripts by leveraging profession
 
 1. **Pre-processing**: Grayscale mapping and Gaussian noise gating.
 2. **Feature Extraction**: High-fidelity gradient resolution via Canny edge detection.
-3. **Spatial Masking**: Configured triangular Region of Interest (ROI) filtering.
-4. **Line Detection**: Identifying structural segments via Probabilistic Hough Line Transform.
-5. **Optimization**: Statistical slope/intercept segregation, averaging, and extrapolation into unified boundary markers.
-6. **Telemetry & Output**: Real-time structured logging paired with `alpha`-blended geometric visual indicators.
+3. **Model Training**: Pipeline integration trained on the [TU Simple Dataset](https://www.kaggle.com/datasets/manideep1108/tusimple).
+4. **Spatial Masking**: Configured triangular Region of Interest (ROI) filtering.
+5. **Line Detection**: Identifying structural segments via Probabilistic Hough Line Transform.
+6. **Optimization & Output**: Statistical extrapolation into unified boundary markers paired with real-time geometric visual overlay.
 
 ## Environment Requirements
 
